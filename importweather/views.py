@@ -34,17 +34,12 @@ class weatherList(APIView):
 
 
 class weatherDetail(APIView):
-    def get_object(self, city_name, ndays,**kwargs):
-        try:
-            x = weatherdata.objects.filter(city_name__icontains=city_name)
-            dt_txt = kwargs['dt_txt']
-            now = datetime.datetime.now()
-            fromdate =  now - timedelta(days=ndays)
-            check = check_date_in_range(now, fromdate, dt_txt)
-            if check == True :
-                return x
-        except Snippet.DoesNotExist:
-            raise Http404
+    def get_object(self, city_name, ndays):
+        x = weatherdata.objects.filter(city_name__icontains=city_name)
+        today_date = datetime.datetime.now()
+        fromdate =  today_date - timedelta(days=ndays)
+        x = x.filter(dt_txt__gte=fromdate).order_by('dt_txt')
+        return x
 
     def get(self,*args,**kwargs):
         city_name = kwargs['city_name']
@@ -53,16 +48,4 @@ class weatherDetail(APIView):
         return Response(serializer.data)
 
 
-def check_date_in_range(d_low, d_high, date):
-    range_pattern = '%Y-%m-%d'
-    date_pattern = '%Y-%m-%d %H:%M:%S'
 
-    dt_low = datetime.datetime.strptime(d_low, range_pattern)
-    dt_high = datetime.datetime.strptime(d_high, range_pattern)
-    dt = datetime.datetime.strptime(date, date_pattern)
-
-
-    if dt_low <= dt <= dt_high:
-        return True
-    else:
-        return False
