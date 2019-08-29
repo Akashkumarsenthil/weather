@@ -38,7 +38,7 @@ class weatherDetail(APIView):
         x = weatherdata.objects.filter(city_name__icontains=city_name)
         today_date = datetime.datetime.now()
         fromdate =  today_date - timedelta(days=ndays)
-        x = x.filter(dt_txt__gte=fromdate).order_by('dt_txt')
+        x = x.filter(dt_txt__gte=fromdate, dt_txt__lte=today_date).order_by('dt_txt')
         return x
 
     def get(self,*args,**kwargs):
