@@ -1,4 +1,6 @@
-# weather
+# weather API
+
+API call:
 
 getWeatherData(nPincode, nDays, mode)
 
